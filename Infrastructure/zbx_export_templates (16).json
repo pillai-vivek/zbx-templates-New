@@ -1,0 +1,100 @@
+{
+    "zabbix_export": {
+        "version": "7.0",
+        "template_groups": [
+            {
+                "uuid": "a571c0d144b14fd4a87a9d9b2aa9fcd6",
+                "name": "Templates/Applications"
+            },
+            {
+                "uuid": "32a83af973c84b78aa411002eeb2b670",
+                "name": "test"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "d45df8a343ba429391eb14c9b5c29bbb",
+                "template": "Linux Process - Info by Vector",
+                "name": "Linux Process - Info by Vector",
+                "groups": [
+                    {
+                        "name": "Templates/Applications"
+                    },
+                    {
+                        "name": "test"
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "2d5659b79fd443c4ae8a7b27ed8b3c76",
+                        "name": "Processes_info",
+                        "type": "EXTERNAL",
+                        "key": "process.py",
+                        "item_prototypes": [
+                            {
+                                "uuid": "ae300bffe46e43b2ba028cc7e2461405",
+                                "name": "{#PROCESS_NAME}",
+                                "type": "SCRIPT",
+                                "key": "processinfo[{#PROCESS_NAME}]",
+                                "value_type": "TEXT",
+                                "trends": "0",
+                                "params": "var obj = JSON.parse(value);\nvar data = {\n    \"NAME\": obj.name,\n    \"PID\": obj.process_id,\n    \"CPU_PERCENT\": obj.cpu_percent,\n    \"MEMORY_PERCENT\": obj.memory_percent\n};\nreturn JSON.stringify(data);  // Ensuring it returns as JSON string",
+                                "parameters": [
+                                    {
+                                        "name": "cpu_percent",
+                                        "value": "{#CPU_PERCENT}"
+                                    },
+                                    {
+                                        "name": "memory_percent",
+                                        "value": "{#MEMORY_PERCENT}"
+                                    },
+                                    {
+                                        "name": "name",
+                                        "value": "{#PROCESS_NAME}"
+                                    },
+                                    {
+                                        "name": "process_id",
+                                        "value": "{#PROCESS_ID}"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "Applications",
+                                        "value": "process_info"
+                                    }
+                                ]
+                            }
+                        ],
+                        "timeout": "3s",
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#CPU_PERCENT}",
+                                "path": "$.CPU_PERCENT"
+                            },
+                            {
+                                "lld_macro": "{#MEMORY_PERCENT}",
+                                "path": "$.MEMORY_PERCENT"
+                            },
+                            {
+                                "lld_macro": "{#PROCESS_ID}",
+                                "path": "$.PID"
+                            },
+                            {
+                                "lld_macro": "{#PROCESS_NAME}",
+                                "path": "$.NAME"
+                            }
+                        ],
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.data[*]"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
