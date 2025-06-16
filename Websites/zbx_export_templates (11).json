@@ -1,0 +1,852 @@
+{
+    "zabbix_export": {
+        "version": "7.0",
+        "template_groups": [
+            {
+                "uuid": "a571c0d144b14fd4a87a9d9b2aa9fcd6",
+                "name": "Templates/Applications"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "3f87454218704232b553355ed0a4b352",
+                "template": "Website Monitoring by Vector Vivek",
+                "name": "Website Monitoring by Vector Vivek",
+                "groups": [
+                    {
+                        "name": "Templates/Applications"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "858af0eaa771406e83d5e9a41eb193ad",
+                        "name": "DNS and GEO",
+                        "type": "DEPENDENT",
+                        "key": "dns_geo",
+                        "delay": "0",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.dns_and_geo"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "dns_geo"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "a5035efc67b940198a1749bebb43e48c",
+                        "name": "DNS Query Time",
+                        "type": "DEPENDENT",
+                        "key": "dns_query_time",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "milliseconds",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.dns_time_ms"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "dns_time"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "6de21eb856e8444a89cfe04e80776e6c",
+                                "expression": "min(/Website Monitoring by Vector Vivek/dns_query_time,#3)>{$DNS.QUERY.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/dns_query_time,#3)<{$DNS.QUERY.WARN}",
+                                "name": "High DNS resolution time :{ITEM.LASTVALUE}",
+                                "opdata": "DNS Query Time: {ITEM.LASTVALUE}",
+                                "priority": "WARNING",
+                                "description": "DNS Resolution Delay (> 100ms)",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "d04167fe7fea4d67813a01b6c423ccc6",
+                        "name": "Download Speed",
+                        "type": "DEPENDENT",
+                        "key": "downloadspeed",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "Kbps",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.download_speed_kbps"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "download_speed"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "29b721b2c090498ba058b41e16c5033d",
+                                "expression": "min(/Website Monitoring by Vector Vivek/downloadspeed,#2)<{$DOWNLOAD.SPEED.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/downloadspeed,#2)<{$DOWNLOAD.SPEED.WARN}",
+                                "name": "Download Speed is Low",
+                                "event_name": "Download Speed is Low for {$TARGET_URL} (Less than {$DOWNLOAD.SPEED.WARN} Kbps)",
+                                "opdata": "Download Speed : {ITEM.LASTVALUE}",
+                                "priority": "WARNING",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "2df596c98b5a49a0b08ca9125a89aa06",
+                        "name": "HTTP Version",
+                        "type": "DEPENDENT",
+                        "key": "http_version",
+                        "delay": "0",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.http_version"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "http_version"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "ee5989a071ba4bbf80a2f157d92eade6",
+                        "name": "Page Load Time",
+                        "type": "DEPENDENT",
+                        "key": "page_load_time",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "milliseconds",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.total_load_time_ms"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "page_load_time"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "cc0679428de64b57865fc259e6243950",
+                                "expression": "min(/Website Monitoring by Vector Vivek/page_load_time,#2)>{$PAGE.LOAD.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/page_load_time,#2)<{$PAGE.LOAD.WARN}",
+                                "name": "Website loading slowly : {ITEM.LASTVALUE}",
+                                "opdata": "Page Load Time: {ITEM.LASTVALUE}",
+                                "priority": "AVERAGE",
+                                "description": "Slow Page Load (> 2s)",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Average"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "d42afb794a3d4004abbfafef0a297866",
+                        "name": "Page Size",
+                        "type": "DEPENDENT",
+                        "key": "page_size",
+                        "delay": "0",
+                        "trends": "0",
+                        "units": "Bytes",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.page_size_bytes"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "page_size"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "3c31a0e063ac41808e4e39ddae304a34",
+                                "expression": "last(/Website Monitoring by Vector Vivek/page_size,#2)>1048576",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Website Monitoring by Vector Vivek/page_size,#2)<1048576",
+                                "name": "Large page size detected : {ITEM.LASTVALUE}",
+                                "priority": "INFO",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Information"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "0abe5babe8d44d13895c1fb879afa20b",
+                        "name": "site_seo_web - Desktop",
+                        "type": "DEPENDENT",
+                        "key": "seo.desktop",
+                        "delay": "0",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.pagespeed_insights.desktop"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_seo_web,--api_key,\"{$API_KEY}\"]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "seo_web_device",
+                                "value": "Desktop"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fe29b4a905664a21a2b170e9bef65e80",
+                        "name": "site_seo_web - Mobile",
+                        "type": "DEPENDENT",
+                        "key": "seo.mobile",
+                        "delay": "0",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.pagespeed_insights.mobile"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_seo_web,--api_key,\"{$API_KEY}\"]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "seo_web_device",
+                                "value": "Mobile"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c81a29531d38437e9212f009870a1b12",
+                        "name": "Cert: Days Left",
+                        "type": "DEPENDENT",
+                        "key": "ssl_days_left",
+                        "delay": "0",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.ssl_certificate.days_left"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "ssl_days_left"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "bdfbc98607824adf96ff9fe798b8c47c",
+                                "expression": "last(/Website Monitoring by Vector Vivek/ssl_days_left)<{$CERT.EXPIRY.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "last(/Website Monitoring by Vector Vivek/ssl_days_left)>{$CERT.EXPIRY.WARN}",
+                                "name": "SSL certificate is expiring soon : {ITEM.LASTVALUE} Days Left",
+                                "opdata": "Remaining Days: {ITEM.LASTVALUE}",
+                                "priority": "AVERAGE",
+                                "description": "The SSL certificate should be updated or it will become untrusted.",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "bb689b50753f4da59338c696fae445ee",
+                        "name": "Cert: Expires on",
+                        "type": "DEPENDENT",
+                        "key": "ssl_expires",
+                        "delay": "0",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.ssl_certificate.ssl_expiry_date"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "ssl_expiry_date"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "57e325c72f1342d98755cf938a7f6706",
+                        "name": "SSL Handshake Time",
+                        "type": "DEPENDENT",
+                        "key": "ssl_handshake",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "milliseconds",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.ssl_handshake_time_ms"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "ssl_handshake"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "e04e86ca1e364c5794d5bb20efcf4f54",
+                                "expression": "min(/Website Monitoring by Vector Vivek/ssl_handshake,#2)>{$SSL.HANDSHAKE.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/ssl_handshake,#2)<{$SSL.HANDSHAKE.WARN}",
+                                "name": "High SSL handshake time : {ITEM.LASTVALUE}",
+                                "opdata": "SSL Handshake Time: {ITEM.LASTVALUE}",
+                                "priority": "WARNING",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b19ad4e9185d4aa1b50f35afcbd3547c",
+                        "name": "Status Code",
+                        "type": "DEPENDENT",
+                        "key": "status.code",
+                        "delay": "0",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.http_probe_status"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "status_code"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "d52647beb404404c8d6f23d199d9c760",
+                                "expression": "min(/Website Monitoring by Vector Vivek/status.code,#3)<>200",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/status.code,#3)=200",
+                                "name": "Website Down (Status Not 200) : {ITEM.LASTVALUE}",
+                                "opdata": "Status: {ITEM.LASTVALUE}",
+                                "priority": "HIGH",
+                                "description": "Website is down (HTTP code is not 200)",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "High"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c85a6a87952c4a89bcd007efb827422a",
+                        "name": "Website availability",
+                        "type": "DEPENDENT",
+                        "key": "status.id",
+                        "delay": "0",
+                        "description": "Availability of website. The value of this item corresponds to availability icons in the host list.Possible values:1 - available0 - not available",
+                        "preprocessing": [
+                            {
+                                "type": "JAVASCRIPT",
+                                "parameters": [
+                                    "    value = parseFloat(value); // Convert the value to a float\n\n    if (value >= 100 && value <= 199) {\n        // Informational responses\n        return 2;\n    } else if (value >= 200 && value <= 299) {\n        // Successful responses\n        return 1;\n    } else if (value >= 300 && value <= 399) {\n        // Redirects\n        return 3;\n    } else if (value >= 405 && value <= 499) {\n        // Client errors\n        return 4;\n    } else if ((value >= 500 && value <= 599) || (value >= 400 && value <= 404)) {\n        // Server errors and specific range (400-404) for errors\n        return 0;\n    } else {\n        // Handle values outside the specified ranges if needed\n        return 1; // Or some other default value or error handling\n    }"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "web.test.rspcode[Web Health Check,health check]"
+                        }
+                    },
+                    {
+                        "uuid": "a09d7b5114a4428f87b8097212c5d0f1",
+                        "name": "TCP Connect Time",
+                        "type": "DEPENDENT",
+                        "key": "tcp_connect_time",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "milliseconds",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.tcp_connect_time_ms"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "tcp_connect_time"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "9d97e061e182473baffd0be786a8c093",
+                                "expression": "min(/Website Monitoring by Vector Vivek/tcp_connect_time,#3)>{$TCP.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/tcp_connect_time,#3)<{$TCP.WARN}",
+                                "name": "High TCP connect time : {ITEM.LASTVALUE}",
+                                "opdata": "TCP Connect time : {ITEM.LASTVALUE}",
+                                "priority": "WARNING",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "f2edfb05cbc74bb085abf23a57af79e6",
+                        "name": "Time to First Byte",
+                        "type": "DEPENDENT",
+                        "key": "ttfb",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "trends": "0",
+                        "units": "milliseconds",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.network_metrics.ttfb_ms"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "website.py[\"{$WEB.URL}\",site_metrix]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "site_metrics",
+                                "value": "ttfb"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "37e2196b69644f0d89f25add36cf6f01",
+                                "expression": "min(/Website Monitoring by Vector Vivek/ttfb,#2)>{$TTFB.WARN}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "min(/Website Monitoring by Vector Vivek/ttfb,#2)<{$TTFB.WARN}",
+                                "name": "High TTFB (Slow backend response) : {ITEM.LASTVALUE}",
+                                "opdata": "Time to First Byte Time: {ITEM.LASTVALUE}",
+                                "priority": "WARNING",
+                                "tags": [
+                                    {
+                                        "tag": "Severity",
+                                        "value": "Warning"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e26185a77d8f4983a0ee34ea061466da",
+                        "name": "site_metrics",
+                        "type": "EXTERNAL",
+                        "key": "website.py[\"{$WEB.URL}\",site_metrix]",
+                        "delay": "{$UPDATE_INTERVAL1}",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "timeout": "5m",
+                        "tags": [
+                            {
+                                "tag": "site",
+                                "value": "metrix"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "85824e8f55a645b9accd992dad6ae880",
+                        "name": "site_seo_web",
+                        "type": "EXTERNAL",
+                        "key": "website.py[\"{$WEB.URL}\",site_seo_web,--api_key,\"{$API_KEY}\"]",
+                        "delay": "{$UPDATE_INTERVAL}",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "timeout": "3m",
+                        "tags": [
+                            {
+                                "tag": "site",
+                                "value": "seo_web"
+                            }
+                        ]
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "afc6cdbf13434b8ea84b7c4fbe567a1b",
+                        "name": "WT Discovery",
+                        "type": "SCRIPT",
+                        "key": "wt.discovery",
+                        "params": "var obj = JSON.parse(value);\n       var data = obj.wtdata;\n       return data",
+                        "item_prototypes": [
+                            {
+                                "uuid": "6be6b135677e4077a8b622c02fbffe64",
+                                "name": "{#PAGE.NAME} page DNS Time",
+                                "type": "DEPENDENT",
+                                "key": "dns.time[{#PAGE.NAME}]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.dns_time"
+                                        ],
+                                        "error_handler": "CUSTOM_VALUE",
+                                        "error_handler_params": "0"
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "wt.py[{#URL}]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "page",
+                                        "value": "{#PAGE.NAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "d155cb98b91641fbb0492e6b4050d0f0",
+                                "name": "{#PAGE.NAME} page Load Time",
+                                "type": "DEPENDENT",
+                                "key": "load.time[{#PAGE.NAME}]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.load_time"
+                                        ],
+                                        "error_handler": "CUSTOM_VALUE",
+                                        "error_handler_params": "0"
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "wt.py[{#URL}]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "page",
+                                        "value": "{#PAGE.NAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "61753576c6ba42719a08216298c5d11c",
+                                "name": "{#PAGE.NAME} page Response Time",
+                                "type": "DEPENDENT",
+                                "key": "response.time[{#PAGE.NAME}]",
+                                "delay": "0",
+                                "value_type": "FLOAT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.response_time"
+                                        ],
+                                        "error_handler": "CUSTOM_VALUE",
+                                        "error_handler_params": "0"
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "wt.py[{#URL}]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "page",
+                                        "value": "{#PAGE.NAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "1969d6748f33445987118db1a07559a2",
+                                "name": "{#PAGE.NAME} page Screenshot",
+                                "type": "DEPENDENT",
+                                "key": "screenshot[{#PAGE.NAME}]",
+                                "delay": "0",
+                                "value_type": "TEXT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.img"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "wt.py[{#URL}]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "page",
+                                        "value": "{#PAGE.NAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "f82d932680db4bfe9e2cf867593ce0a3",
+                                "name": "WT RAW for {#PAGE.NAME}",
+                                "type": "EXTERNAL",
+                                "key": "wt.py[{#URL}]",
+                                "delay": "15m",
+                                "value_type": "TEXT",
+                                "trends": "0",
+                                "timeout": "90s",
+                                "tags": [
+                                    {
+                                        "tag": "page",
+                                        "value": "{#PAGE.NAME}"
+                                    }
+                                ]
+                            }
+                        ],
+                        "parameters": [
+                            {
+                                "name": "wtdata",
+                                "value": "{$WT.DATA}"
+                            }
+                        ],
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#PAGE.NAME}",
+                                "path": "$.page_name"
+                            },
+                            {
+                                "lld_macro": "{#URL}",
+                                "path": "$.url"
+                            }
+                        ],
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.data[*]"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ]
+                    }
+                ],
+                "httptests": [
+                    {
+                        "uuid": "97c71f5f6bbf4e68807810e22ad01a84",
+                        "name": "Web Health Check",
+                        "delay": "15s",
+                        "steps": [
+                            {
+                                "name": "health check",
+                                "url": "{$WEB.SCHEME}://{$WEB.URL}",
+                                "follow_redirects": "NO"
+                            }
+                        ]
+                    }
+                ],
+                "tags": [
+                    {
+                        "tag": "class",
+                        "value": "application"
+                    },
+                    {
+                        "tag": "target",
+                        "value": "website"
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$API_KEY}",
+                        "value": "AIzaSyDXf_9V_-ITsUIQ4-s5uIEPjxQ-SOI2Xt4",
+                        "description": "API key for the page speed insight"
+                    },
+                    {
+                        "macro": "{$CERT.EXPIRY.WARN}",
+                        "value": "15",
+                        "description": "Provide Threshold Value in Days"
+                    },
+                    {
+                        "macro": "{$DNS.QUERY.WARN}",
+                        "value": "100",
+                        "description": "Provide Threshold Value in ms"
+                    },
+                    {
+                        "macro": "{$DOWNLOAD.SPEED.WARN}",
+                        "value": "768",
+                        "description": "Provide Threshold Value in kbps"
+                    },
+                    {
+                        "macro": "{$PAGE.LOAD.WARN}",
+                        "value": "2000",
+                        "description": "Provide Threshold Value in ms"
+                    },
+                    {
+                        "macro": "{$SSL.HANDSHAKE.WARN}",
+                        "value": "500",
+                        "description": "Provide Threshold Value in ms"
+                    },
+                    {
+                        "macro": "{$TCP.WARN}",
+                        "value": "200",
+                        "description": "Provide Threshold Value in ms"
+                    },
+                    {
+                        "macro": "{$TTFB.WARN}",
+                        "value": "1000",
+                        "description": "Provide Threshold Value"
+                    },
+                    {
+                        "macro": "{$UPDATE_INTERVAL}",
+                        "value": "30m",
+                        "description": "Update Interval time for item - site_seo_web"
+                    },
+                    {
+                        "macro": "{$UPDATE_INTERVAL1}",
+                        "value": "5m",
+                        "description": "Update Interval time for item - site_metrics"
+                    },
+                    {
+                        "macro": "{$WEB.SCHEME}",
+                        "value": "https",
+                        "description": "http or https"
+                    },
+                    {
+                        "macro": "{$WEB.URL}",
+                        "description": "Website URL should be provided here"
+                    },
+                    {
+                        "macro": "{$WT.DATA}",
+                        "description": "{   \"data\": [     {       \"page_name\": \"<name of your website page>\",       \"url\": \"<link of your page>\"     },     {       \"page_name\": \"<name of second page>\",       \"url\": \"<link of second page>\"     }   ] }"
+                    }
+                ]
+            }
+        ]
+    }
+}
