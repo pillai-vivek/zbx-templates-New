@@ -1,0 +1,246 @@
+{
+    "zabbix_export": {
+        "version": "7.0",
+        "template_groups": [
+            {
+                "uuid": "748ad4d098d447d492bb935c907f652f",
+                "name": "Templates/Databases"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "7770e068f6734bc38b90677fa81b6e4e",
+                "template": "Oracle Database by Vector",
+                "name": "Oracle Database by Vector",
+                "groups": [
+                    {
+                        "name": "Templates/Databases"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "92520e25cbbf46ea9edce19a3263b8d5",
+                        "name": "Get Blocking Sessions",
+                        "type": "EXTERNAL",
+                        "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"Get Blocking Sessions\"]",
+                        "delay": "5m",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "timeout": "60s"
+                    },
+                    {
+                        "uuid": "34d9d98f17274b1aafae81d8a475701f",
+                        "name": "Get Table Space Usage",
+                        "type": "EXTERNAL",
+                        "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"Get Table Space Usage\"]",
+                        "delay": "5m",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "timeout": "60s"
+                    },
+                    {
+                        "uuid": "78460f44763f4e0d95b32f3a1119d81d",
+                        "name": "High-Impact SQL Queries",
+                        "type": "EXTERNAL",
+                        "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"High-Impact SQL Queries\"]",
+                        "delay": "5m",
+                        "value_type": "TEXT",
+                        "trends": "0",
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.data[?(@.USERNAME != 'ZABBIX_MON' && @.SQL_TEXT != 'SELECT s.sid, s.serial#,...')]"
+                                ]
+                            }
+                        ],
+                        "timeout": "60s"
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "8530fdd2e3784755bfc83475e8228484",
+                        "name": "Get Table Space Usage",
+                        "type": "DEPENDENT",
+                        "key": "get.quries",
+                        "delay": "0",
+                        "item_prototypes": [
+                            {
+                                "uuid": "cdddc671d143418db9520c3208e7efb5",
+                                "name": "Query:{#TABLESPACE_NAME}",
+                                "type": "DEPENDENT",
+                                "key": "query[{#TABLESPACE_NAME}]",
+                                "delay": "0",
+                                "value_type": "TEXT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.data[?(@.TABLESPACE_NAME == '{#TABLESPACE_NAME}')]"
+                                        ]
+                                    },
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.[0]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"Get Table Space Usage\"]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "database"
+                                    },
+                                    {
+                                        "tag": "get-table"
+                                    },
+                                    {
+                                        "tag": "Tablespace",
+                                        "value": "UPercent"
+                                    }
+                                ],
+                                "trigger_prototypes": [
+                                    {
+                                        "uuid": "592e717c18794256a0bc8bf5e40562a5",
+                                        "expression": "jsonpath(last(/Oracle Database by Vector/query[{#TABLESPACE_NAME}],#1),\"$.UPercent\")>{$UPERCENT.VALUE} and {$TRIGGER_ENABLE}",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "jsonpath(last(/Oracle Database by Vector/query[{#TABLESPACE_NAME}],#1),\"$.UPercent\")<{$UPERCENT.VALUE}",
+                                        "name": "Tablespace {#TABLESPACE_NAME} Usage Exceeded {$UPERCENT.VALUE}",
+                                        "priority": "HIGH",
+                                        "description": "Tablespace {#TABLESPACE_NAME} usage exceeded {$UPERCENT.VALUE}%. Consider increasing space.",
+                                        "manual_close": "YES",
+                                        "tags": [
+                                            {
+                                                "tag": "Tablespace",
+                                                "value": "UPercent"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"Get Table Space Usage\"]"
+                        },
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#TABLESPACE_NAME}",
+                                "path": "$.TABLESPACE_NAME"
+                            },
+                            {
+                                "lld_macro": "{#UPERCENT}",
+                                "path": "$.UPercent"
+                            }
+                        ],
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.data[*]"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "d6d993b071454b858655033f2e9d0bff",
+                        "name": "Oracle Slow Queries Discovery",
+                        "type": "DEPENDENT",
+                        "key": "slow.queries",
+                        "delay": "0",
+                        "item_prototypes": [
+                            {
+                                "uuid": "9a346b5213644540886b493cf470a4ce",
+                                "name": "Query: {#SQL_ID}",
+                                "type": "DEPENDENT",
+                                "key": "query[{#SQL_ID}]",
+                                "delay": "0",
+                                "value_type": "TEXT",
+                                "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "JSONPATH",
+                                        "parameters": [
+                                            "$.data[?(@.SQL_ID == \"{#SQL_ID}\")]"
+                                        ]
+                                    }
+                                ],
+                                "master_item": {
+                                    "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"High-Impact SQL Queries\"]"
+                                },
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "database"
+                                    },
+                                    {
+                                        "tag": "slow-queries"
+                                    }
+                                ],
+                                "trigger_prototypes": [
+                                    {
+                                        "uuid": "ccbd9b63d7a54750a3691aa019596088",
+                                        "expression": "last(/Oracle Database by Vector/query[{#SQL_ID}],#1) = \"INACTIVE\"",
+                                        "name": "SQL Session {#SQL_ID} is Inactive",
+                                        "status": "DISABLED",
+                                        "discover": "NO_DISCOVER",
+                                        "priority": "HIGH",
+                                        "description": "SQL session {#SQL_ID} (SID: {#SID}, User: {#USERNAME}) is inactive."
+                                    }
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "oracle.py[\"--dsn\",\"{$ORACLE.CONNSTRING}\",\"--user\",\"{$ORACLE.USER}\",\"--password\",\"{$ORACLE.PASSWORD}\",\"--service_name\",\"{$ORACLE.SERVICE}\",--query_name,\"High-Impact SQL Queries\"]"
+                        },
+                        "lld_macro_paths": [
+                            {
+                                "lld_macro": "{#CPU_SECONDS}",
+                                "path": "$.CPU_SECONDS"
+                            },
+                            {
+                                "lld_macro": "{#ELAPSED_SECONDS}",
+                                "path": "$.ELAPSED_SECONDS"
+                            },
+                            {
+                                "lld_macro": "{#EVENT}",
+                                "path": "$.EVENT"
+                            },
+                            {
+                                "lld_macro": "{#EXECUTIONS}",
+                                "path": "$.EXECUTIONS"
+                            },
+                            {
+                                "lld_macro": "{#SID}",
+                                "path": "$.SID"
+                            },
+                            {
+                                "lld_macro": "{#SQL_ID}",
+                                "path": "$.SQL_ID"
+                            },
+                            {
+                                "lld_macro": "{#STATUS}",
+                                "path": "$.STATUS"
+                            },
+                            {
+                                "lld_macro": "{#USERNAME}",
+                                "path": "$.USERNAME"
+                            }
+                        ],
+                        "preprocessing": [
+                            {
+                                "type": "JSONPATH",
+                                "parameters": [
+                                    "$.data[*]"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
